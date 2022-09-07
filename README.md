@@ -1,0 +1,1 @@
+This repo will have some MySQL database exercises.
