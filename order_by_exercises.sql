@@ -40,7 +40,7 @@ WHERE last_name NOT LIKE "E%" AND last_name LIKE "%e";
 -- 7. Find all current or previous employees whose last name starts and ends with 'E'. Enter a comment with the number of employees whose last name starts and ends with E. 
 SELECT COUNT(emp_no)
 FROM employees
-WHERE last_name LIKE "E%" AND last_name LIKE "%e";
+WHERE last_name LIKE "E%e";
 -- Results: 899
 
 -- How many employees' last names end with E, regardless of whether they start with E?
