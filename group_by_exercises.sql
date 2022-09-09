@@ -85,6 +85,22 @@ FROM employees
 GROUP BY username;
 HAVING Total > 1;
 
+-- How many employees share a username with someone(s) else? 27403
+SELECT SUM(Total)
+FROM (SELECT LOWER(
+		CONCAT(
+			SUBSTR(first_name, 1, 1), 
+			SUBSTR(last_name, 1, 4),
+			'_',
+			SUBSTR(birth_date, 6, 2),
+			SUBSTR(birth_date, 3, 2)
+			) 
+		) AS username, 
+	COUNT(*) AS Total
+	FROM employees
+	GROUP BY username
+	HAVING Total > 1) AS Result
+
 /****************Bonus*****************/
 -- Determine the historic average salary for each employee. 
 SELECT emp_no, 
