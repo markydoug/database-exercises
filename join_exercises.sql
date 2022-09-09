@@ -108,8 +108,9 @@ JOIN employees AS e
 JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE s.to_date > CURDATE()
-GROUP BY Department_Name;
-ORDER BY s.salary DESC
+GROUP BY Department_Name
+ORDER BY average_salary DESC
+LIMIT 1;
 
 -- 8. Who is the highest paid employee in the Marketing department?
 SELECT e.first_name,
@@ -123,7 +124,8 @@ JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE s.to_date > CURDATE()
 	AND d.dept_name = "Marketing"
-ORDER BY s.salary DESC;
+ORDER BY s.salary DESC
+LIMIT 1;
 
 -- 9. Which current department manager has the highest salary?
 SELECT  e.first_name, 
@@ -139,7 +141,8 @@ JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE dm.to_date > CURDATE()
 	AND s.to_date > CURDATE()
-ORDER BY s.salary DESC;
+ORDER BY s.salary DESC
+LIMIT 1;
 
 -- 10. Determine the average salary for each department. Use all salary information and round your results.
 SELECT d.dept_name AS department_name, 
@@ -156,6 +159,22 @@ ORDER BY average_salary DESC;
 
 /**************BONUS****************/
 -- 11. Find the names of all current employees, their department name, and their current manager's name.
+SELECT CONCAT(
+	e.first_name, 
+    " ",
+    e.last_name
+    ) AS Employee_Name,
+    d.dept_name AS Department_Name,
+    dm.emp_no AS Department_Manager
+FROM employees AS e
+JOIN dept_emp AS de
+	ON de.emp_no = e.emp_no
+JOIN departments AS d
+    ON d.dept_no = de.dept_no
+JOIN dept_manager AS dm
+	ON dm.dept_no = d.dept_no
+WHERE de.to_date > CURDATE()
+	AND dm.to_date > CURDATE();
 
 -- 12. Who is the highest paid employee within each department.
 
