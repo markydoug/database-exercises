@@ -25,24 +25,44 @@ JOIN titles
 	ON titles.emp_no = aamod.emp_no;
 
 -- 3. How many people in the employees table are no longer working for the company? 
-
--- Give the answer in a comment in your code.
+SELECT COUNT(*)
+FROM (SELECT e.emp_no
+	FROM employees AS e
+    JOIN dept_emp AS de
+		ON de.emp_no = e.emp_no
+    WHERE to_date < CURDATE()
+    GROUP BY e.emp_no
+    ) AS former;
+-- Give the answer in a comment in your code. 85108
 
 -- 4. Find all the current department managers that are female. 
-SELECT d.dept_name AS Department_Name, 
-	CONCAT(e.first_name, ' ', e.last_name) AS Department_Manager
-FROM departments AS d
-JOIN dept_manager AS dm
-    ON dm.dept_no = d.dept_no
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS Department_Manager
+FROM (
+	SELECT emp_no
+    FROM dept_manager
+    WHERE to_date > CURDATE()
+    ) AS managers
 JOIN employees AS e
-    ON e.emp_no = dm.emp_no
-WHERE dm.to_date > CURDATE()
-    AND e.gender = 'F';
+	ON e.emp_no = managers.emp_no
+WHERE e.gender = "F";
 -- List their names in a comment in your code.
+-- Isamu Legleitner
+-- Karsten Sigstam
+-- Leon DasSarma
+-- Hilary Kambil
 
 -- 5. Find all the employees who currently have a higher salary than the companies overall, historical average salary.
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+	s.salary
+FROM employees AS e
+JOIN salaries AS s
+	ON s.emp_no = e.emp_no
+WHERE s.salary > (SELECT AVG(salary) FROM salaries) 
+	AND s.to_date > CURDATE();
 
--- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) What percentage of all salaries is this?
+-- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) 
+
+-- What percentage of all salaries is this?
 -- Hint You will likely use multiple subqueries in a variety of ways
 -- Hint It's a good practice to write out all of the small queries that you can. Add a comment above the query showing the number of rows returned. You will use this number (or the query that produced it) in other, larger queries.
 
