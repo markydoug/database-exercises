@@ -178,3 +178,15 @@ WHERE de.to_date > CURDATE()
 
 -- 12. Who is the highest paid employee within each department.
 
+SELECT d.dept_name AS Department_Name,
+	MAX(s.salary)
+FROM departments AS d
+JOIN dept_emp AS de
+    ON de.dept_no = d.dept_no
+JOIN employees AS e
+    ON e.emp_no = de.emp_no
+JOIN salaries AS s
+	ON s.emp_no = e.emp_no
+WHERE de.to_date > CURDATE()
+	AND s.to_date > CURDATE()
+GROUP BY d.dept_name;
