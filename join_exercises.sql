@@ -108,6 +108,7 @@ JOIN employees AS e
 JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE s.to_date > CURDATE()
+	AND de.to_date > CURDATE()
 GROUP BY Department_Name
 ORDER BY average_salary DESC
 LIMIT 1;
