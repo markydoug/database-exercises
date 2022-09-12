@@ -160,21 +160,27 @@ ORDER BY average_salary DESC;
 /**************BONUS****************/
 -- 11. Find the names of all current employees, their department name, and their current manager's name.
 SELECT CONCAT(
-	e.first_name, 
+	em.first_name, 
     " ",
-    e.last_name
+    em.last_name
     ) AS Employee_Name,
-    d.dept_name AS Department_Name,
-    dm.emp_no AS Department_Manager
-FROM employees AS e
-JOIN dept_emp AS de
-	ON de.emp_no = e.emp_no
-JOIN departments AS d
-    ON d.dept_no = de.dept_no
+	d.dept_name AS Department_Name, 
+	CONCAT(
+		e.first_name, 
+		' ', 
+		e.last_name
+	) AS Department_Manager
+FROM departments AS d
 JOIN dept_manager AS dm
-	ON dm.dept_no = d.dept_no
+    ON dm.dept_no = d.dept_no
+JOIN employees AS e
+    ON e.emp_no = dm.emp_no
+LEFT JOIN dept_emp AS de
+	ON de.dept_no = d.dept_no
+LEFT JOIN employees AS em
+	ON de.emp_no = em.emp_no
 WHERE de.to_date > CURDATE()
-	AND dm.to_date > CURDATE();
+	AND dm.to_date > CURDATE();  
 
 -- 12. Who is the highest paid employee within each department.
 
@@ -190,3 +196,5 @@ JOIN salaries AS s
 WHERE de.to_date > CURDATE()
 	AND s.to_date > CURDATE()
 GROUP BY d.dept_name;
+
+-- missing employee names
