@@ -55,7 +55,7 @@ WHERE e.gender = "F";
 SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name,
 	s.salary
 FROM employees AS e
-JOIN salaries AS s
+JOIN salaries AS ss
 	ON s.emp_no = e.emp_no
 WHERE s.salary > (SELECT AVG(salary) FROM salaries) 
 	AND s.to_date > CURDATE();
