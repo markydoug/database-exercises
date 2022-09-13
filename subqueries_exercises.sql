@@ -60,11 +60,58 @@ JOIN salaries AS ss
 WHERE s.salary > (SELECT AVG(salary) FROM salaries) 
 	AND s.to_date > CURDATE();
 
--- 6. How many current salaries are within 1 standard deviation of the current highest salary? (Hint: you can use a built in function to calculate the standard deviation.) 
+-- 6. How many current salaries are within 1 standard deviation of the current highest salary? 83
+SELECT COUNT(*)
+FROM salaries
+WHERE salary >= (
+		(SELECT MAX(salary) FROM salaries WHERE to_date > CURDATE()) 
+		- (SELECT STD(salary) FROM salaries WHERE to_date > CURDATE())
+		) 
+	AND to_date > CURDATE();
+-- What percentage of all salaries is this? 0.0346%
+-- VERY INEFFICIENT! ! ! NEED TO RETHINK
+SELECT (
+		(
+			SELECT COUNT(*)
+			FROM salaries
+			WHERE salary >= ((SELECT MAX(salary) FROM salaries WHERE to_date > CURDATE()) - (SELECT STD(salary) FROM salaries WHERE to_date > CURDATE())) AND 
+			to_date > CURDATE()
+		) / 
+        (
+        SELECT COUNT(*)
+		FROM salaries
+		WHERE to_date > CURDATE()
+        ) * 100
+	) AS percentage
+FROM salaries
+GROUP BY percentage;
 
--- What percentage of all salaries is this?
 -- Hint You will likely use multiple subqueries in a variety of ways
 -- Hint It's a good practice to write out all of the small queries that you can. Add a comment above the query showing the number of rows returned. You will use this number (or the query that produced it) in other, larger queries.
+-- Highest current salary = 158220
+SELECT MAX(salary)
+FROM salaries;
+-- WHERE to_date > CURDATE();
+
+-- STD of current salary = 17309.95933634675 
+SELECT STD(salary)
+FROM salaries
+WHERE to_date > CURDATE();
+
+-- STD of all salary = 16904.82828800014
+SELECT STD(salary)
+FROM salaries;
+
+-- Salaries 1 STD from highest current salary = 83 
+SELECT COUNT(*)
+FROM salaries
+WHERE salary >= ((SELECT MAX(salary) FROM salaries WHERE to_date > CURDATE()) - (SELECT STD(salary) FROM salaries WHERE to_date > CURDATE())) AND 
+    to_date > CURDATE();
+    
+-- All current salaries = 240124
+SELECT COUNT(*)
+FROM salaries
+WHERE to_date > CURDATE();
 
 
 
