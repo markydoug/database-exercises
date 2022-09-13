@@ -10,6 +10,15 @@ WHERE hire_date = (
 );
 
 -- 2. Find all the titles ever held by all current employees with the first name Aamod.
+SELECT title
+FROM titles
+WHERE emp_no IN (SELECT emp_no
+		FROM employees
+		WHERE first_name = "Aamod"
+		)
+	AND to_date > CURDATE();
+
+/* IF YOU WANT EMPLOYEES NAME AND NOT JUST TITLE
 SELECT CONCAT(
 		aamod.first_name, 
 		' ', 
@@ -22,29 +31,31 @@ FROM (
     WHERE first_name = "Aamod"
 ) AS aamod
 JOIN titles
-	ON titles.emp_no = aamod.emp_no;
+	ON titles.emp_no = aamod.emp_no;*/
 
 -- 3. How many people in the employees table are no longer working for the company? 
 SELECT COUNT(*)
-FROM (SELECT e.emp_no
 	FROM employees AS e
-    JOIN dept_emp AS de
-		ON de.emp_no = e.emp_no
-    WHERE to_date < CURDATE()
-    GROUP BY e.emp_no
-    ) AS former;
+    WHERE emp_no IN (
+		SELECT emp_no
+        FROM dept_emp
+        WHERE to_date < CURDATE()
+	);
 -- Give the answer in a comment in your code. 85108
 
 -- 4. Find all the current department managers that are female. 
-SELECT CONCAT(e.first_name, ' ', e.last_name) AS Department_Manager
-FROM (
+SELECT CONCAT(first_name, ' ', last_name) AS Department_Manager
+FROM employees 
+WHERE emp_no IN (
 	SELECT emp_no
-    FROM dept_manager
-    WHERE to_date > CURDATE()
-    ) AS managers
-JOIN employees AS e
-	ON e.emp_no = managers.emp_no
-WHERE e.gender = "F";
+	FROM dept_manager
+	WHERE emp_no IN (
+		SELECT emp_no
+		FROM employees 
+		WHERE gender = "F"
+	)
+	AND to_date > CURDATE()
+);
 -- List their names in a comment in your code.
 -- Isamu Legleitner
 -- Karsten Sigstam
@@ -52,10 +63,20 @@ WHERE e.gender = "F";
 -- Hilary Kambil
 
 -- 5. Find all the employees who currently have a higher salary than the companies overall, historical average salary.
+SELECT CONCAT(first_name, ' ', last_name) AS full_name
+FROM employees 
+WHERE emp_no IN (
+	SELECT emp_no
+    FROM salaries
+    WHERE salary > (SELECT AVG(salary) FROM salaries) 
+		AND to_date > CURDATE()
+);
+
+-- Below code will produce both employee name and current salary
 SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name,
 	s.salary
 FROM employees AS e
-JOIN salaries AS ss
+JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE s.salary > (SELECT AVG(salary) FROM salaries) 
 	AND s.to_date > CURDATE();
@@ -134,11 +155,14 @@ WHERE dept_no IN (
 -- 2. Find the first and last name of the employee with the highest salary.
 SELECT first_name, last_name
 FROM employees
-JOIN salaries as s
-	USING (emp_no)
-WHERE salary = (SELECT MAX(salary) 
-	FROM salaries 
-	WHERE to_date > CURDATE());
+WHERE emp_no IN (
+	SELECT emp_no 
+    FROM salaries
+    WHERE salary = (SELECT MAX(salary) 
+		FROM salaries 
+		WHERE to_date > CURDATE()
+	)
+);
 
 -- 3. Find the department name that the employee with the highest salary works in.
 SELECT dept_name
@@ -146,9 +170,12 @@ FROM departments
 WHERE dept_no = (
 	SELECT dept_no
 	FROM dept_emp
-	JOIN salaries as s
-		USING (emp_no)
-	WHERE salary = (SELECT MAX(salary) 
-		FROM salaries 
-		WHERE to_date > CURDATE())
-)
+	WHERE emp_no IN (
+		SELECT emp_no 
+		FROM salaries
+		WHERE salary = (SELECT MAX(salary) 
+			FROM salaries 
+			WHERE to_date > CURDATE()
+		)
+	)
+);
