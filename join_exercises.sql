@@ -42,6 +42,20 @@ JOIN employees AS e
     ON e.emp_no = dm.emp_no
 WHERE dm.to_date > CURDATE();
 
+-- Don't need aliases before column name if it is ths only table with that column name
+-- Can join with where clauses embedded
+-- USING is used when two tables are linked on the same column name
+SELECT dept_name AS Department_Name, 
+	CONCAT(first_name, ' ', last_name) AS Department_Manager
+FROM departments AS d
+JOIN dept_manager AS dm
+    USING  (dept_no)
+    AND to_date > CURDATE()
+JOIN employees AS e
+    USING (emp_no);
+
+--ALL previous queries have not updated due to this new info ^
+
 -- 3. Find the name of all departments currently managed by women.
 SELECT d.dept_name AS Department_Name, 
 	CONCAT(e.first_name, ' ', e.last_name) AS Department_Manager
