@@ -3,7 +3,19 @@ USE employees;
 -- 1. Find all the current employees with the same hire date as employee 101010 using a sub-query.
 SELECT first_name, last_name, hire_date
 FROM employees
-WHERE hire_date = (
+WHERE to_date > CURDATE()
+AND hire_date = (
+    SELECT hire_date
+    FROM employees
+    WHERE emp_no = 101010
+);
+
+-- Forgot CURRENT employees so below is the correction
+SELECT first_name, last_name, hire_date
+FROM employees
+JOIN dept_emp USING (emp_no)
+WHERE to_date > CURDATE()
+AND hire_date = (
     SELECT hire_date
     FROM employees
     WHERE emp_no = 101010
@@ -17,6 +29,16 @@ WHERE emp_no IN (SELECT emp_no
 		WHERE first_name = "Aamod"
 		)
 	AND to_date > CURDATE();
+
+-- Focus on CURENT employees and list ALL titles
+SELECT title
+FROM titles
+WHERE emp_no IN (SELECT emp_no
+		FROM employees
+        JOIN dept_emp USING (emp_no)
+		WHERE first_name = "Aamod"
+        AND to_date > CURDATE()
+		);
 
 /* IF YOU WANT EMPLOYEES NAME AND NOT JUST TITLE
 SELECT CONCAT(
@@ -42,6 +64,19 @@ SELECT COUNT(*)
         WHERE to_date < CURDATE()
 	);
 -- Give the answer in a comment in your code. 85108
+/*************The above doesn't work because it will take out some people IF
+They have a to_date below CURDATE() EVEN if they are still working**********/
+
+-- MUST GO WITH BELOW
+SELECT COUNT(*)
+	FROM employees AS e
+    WHERE emp_no NOT IN (
+		SELECT emp_no
+        FROM dept_emp
+        WHERE to_date > CURDATE()
+	);
+-- Give the answer in a comment in your code. 59900
+
 
 -- 4. Find all the current department managers that are female. 
 SELECT CONCAT(first_name, ' ', last_name) AS Department_Manager
