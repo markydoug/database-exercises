@@ -90,7 +90,6 @@ WHERE salary >= (
 		) 
 	AND to_date > CURDATE();
 -- What percentage of all salaries is this? 0.0346%
--- VERY INEFFICIENT! ! ! NEED TO RETHINK
 SELECT (
 		(
 			SELECT COUNT(*)
@@ -106,6 +105,28 @@ SELECT (
 	) AS percentage
 FROM salaries
 GROUP BY percentage;
+
+-- Beautiful All Info Together
+SELECT calc.one_std_away AS "Number of Salaries 1 STD Away",
+calc.total AS "Total Number of Current Salaries",
+(calc.one_std_away / calc.total * 100) as "Percentage of Current Salaries 1 STD Away"
+FROM (
+	SELECT
+		(SELECT COUNT(*)
+			FROM (
+				SELECT * 
+				FROM salaries
+				WHERE to_date > CURDATE() 
+					AND 
+				salary >= ((SELECT MAX(salary) FROM salaries WHERE to_date > CURDATE()) 
+				- (SELECT ROUND(STD(salary)) FROM salaries WHERE to_date > CURDATE()))
+			) as result)
+		AS one_std_away,
+		(SELECT COUNT(*) 
+			FROM salaries 
+			WHERE to_date > CURDATE()
+        ) AS total
+            ) calc;
 
 -- Hint You will likely use multiple subqueries in a variety of ways
 -- Hint It's a good practice to write out all of the small queries that you can. Add a comment above the query showing the number of rows returned. You will use this number (or the query that produced it) in other, larger queries.
@@ -170,7 +191,7 @@ FROM departments
 WHERE dept_no = (
 	SELECT dept_no
 	FROM dept_emp
-	WHERE emp_no IN (
+	WHERE emp_no = (
 		SELECT emp_no 
 		FROM salaries
 		WHERE salary = (SELECT MAX(salary) 
