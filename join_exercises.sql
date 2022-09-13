@@ -49,7 +49,7 @@ SELECT dept_name AS Department_Name,
 	CONCAT(first_name, ' ', last_name) AS Department_Manager
 FROM departments AS d
 JOIN dept_manager AS dm
-    USING  (dept_no)
+    ON  dm.dept_no = d.dept_no
     AND to_date > CURDATE()
 JOIN employees AS e
     USING (emp_no);
@@ -123,6 +123,20 @@ JOIN salaries AS s
 	ON s.emp_no = e.emp_no
 WHERE s.to_date > CURDATE()
 	AND de.to_date > CURDATE()
+GROUP BY Department_Name
+ORDER BY average_salary DESC
+LIMIT 1;
+
+-- EFFICIENT VERSION OF EXERCISE 7
+SELECT d.dept_name AS department_name, 
+	ROUND(AVG(s.salary),2) AS average_salary
+FROM dept_emp AS de
+JOIN salaries as s
+    ON s.emp_no = de.emp_no
+	AND de.to_date > CURDATE()
+    AND s.to_date > CURDATE()
+JOIN departments AS d
+	USING (dept_no)
 GROUP BY Department_Name
 ORDER BY average_salary DESC
 LIMIT 1;
