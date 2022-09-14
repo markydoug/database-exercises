@@ -34,6 +34,9 @@ FROM film
 WHERE length >= 180;
 
 -- b. Select the payment id, amount, and payment date columns from the payments table for payments made on or after 05/27/2005.
+SELECT payment_id, amount, payment_date
+FROM payment
+WHERE payment_date >= 2005-05-27;
 
 -- c. Select the primary key, amount, and payment date columns from the payment table for payments made on 05/27/2005.
 

@@ -5,9 +5,16 @@ USE employees
 -- that is a 1 if the employee is still with the company and 0 if not.
 SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name, dept_no, from_date, to_date,
 	CASE
-		WHEN emp_no  IN (select emp_no FROM dept_emp WHERE to_date > CURDATE()) THEN 1
+		WHEN emp_no IN (select emp_no FROM dept_emp WHERE to_date > CURDATE()) THEN 1
 		ELSE 0
     END AS is_current_employee
+FROM employees AS e
+JOIN dept_emp USING(emp_no);
+
+--Use IF to do the same thing
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name, dept_no, from_date, to_date,
+	IF(emp_no  IN (select emp_no FROM dept_emp WHERE to_date > CURDATE()),1,0)
+	AS is_current_employee
 FROM employees AS e
 JOIN dept_emp USING(emp_no);
 
