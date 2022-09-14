@@ -5,14 +5,15 @@ CREATE TEMPORARY TABLE employees_with_departments AS
 SELECT e.first_name, e.last_name, d.dept_name
 FROM employees.employees AS e
 JOIN employees.dept_emp AS de USING(emp_no)
-JOIN employees.departments AS d USING(dept_no);
+JOIN employees.departments AS d USING(dept_no)
+WHERE to_date > CURDATE();
 
 -- a. Add a column named full_name to this table. It should be a VARCHAR whose length is the sum of the lengths of the first name and last name columns
 ALTER TABLE employees_with_departments ADD full_name VARCHAR(100);
 
 -- b. Update the table so that full name column contains the correct data
 UPDATE employees_with_departments
-SET full_name = CONCAT(first_name, last_name);
+SET full_name = CONCAT(first_name, ' ', last_name);
 
 -- c. Remove the first_name and last_name columns from the table.
 ALTER TABLE employees_with_departments DROP COLUMN first_name;
@@ -20,10 +21,13 @@ ALTER TABLE employees_with_departments DROP COLUMN last_name;
 
 -- d. What is another way you could have ended up with this same table?
 CREATE TEMPORARY TABLE employees_with_departments AS
-SELECT CONCAT(e.first_name, e.last_name), d.dept_name
+SELECT CONCAT(e.first_name, ' ', e.last_name), d.dept_name
 FROM employees.employees AS e
 JOIN employees.dept_emp AS de USING(emp_no)
 JOIN employees.departments AS d USING(dept_no);
+
+-- how to drop the temporary table
+DROP TABLE IF EXISTS table_name
 
 -- 2. Create a temporary table based on the payment table from the sakila database.
 CREATE TEMPORARY TABLE payment_temp AS
@@ -43,8 +47,15 @@ SET amount = num_of_cents;
 
 ALTER TABLE payment_temp DROP num_of_cents;
 
+-- MORE EFFICIENT WAY
+CREATE TEMPORARY TABLE payment_temp AS
+SELECT payment_id, customer_id, staff_id, rental_id, amount * 100 AS amount
+FROM FROM sakila.payment;
+
+ALTER TABLE payment_temp MODIFY amount INT NOT NULL;
+
 -- 3. Find out how the current average pay in each department compares to the overall current pay for everyone at the company. In order to make the comparison easier, you should use the Z-score for salaries. In terms of salary, what is the best department right now to work for? The worst?
-UUSE mirzakhani_1935;
+USE mirzakhani_1935;
 
 CREATE TEMPORARY TABLE avg_salaries_by_dept AS
 SELECT d.dept_name,
