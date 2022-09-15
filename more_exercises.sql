@@ -39,12 +39,24 @@ FROM payment
 WHERE payment_date >= 2005-05-27;
 
 -- c. Select the primary key, amount, and payment date columns from the payment table for payments made on 05/27/2005.
+SELECT payment_id, amount, payment_date
+FROM payment
+WHERE payment_date = 2005-05-27;
 
--- d. Select all columns from the customer table for rows that have a last names beginning with S and a first names ending with N.
+-- d. Select all columns from the customer table for rows that have a last name beginning with S and a first name ending with N.
+SELECT * 
+FROM customer
+WHERE first_name LIKE 'S%' AND last_name LIKE '%N';
 
 -- e. Select all columns from the customer table for rows where the customer is inactive or has a last name beginning with "M".
+SELECT *
+FROM customer
+WHERE active = 0 OR last_name LIKE 'M%';
 
 -- f. Select all columns from the category table for rows where the primary key is greater than 4 and the name field begins with either C, S or T.
+SELECT *
+FROM category
+WHERE category_id > 4 AND (name LIKE 'C%' OR name LIKE'T%' OR name LIKE'S%');
 
 -- g. Select all columns minus the password column from the staff table for rows that contain a password.
 
@@ -58,7 +70,7 @@ WHERE payment_date >= 2005-05-27;
 
 -- c. Select all columns from the film table for films rated G, PG-13 or NC-17.
 
-BETWEEN operator
+-- BETWEEN operator
 Select all columns from the payment table for payments made between midnight 05/25/2005 and 1 second before midnight 05/26/2005.
 Select the film_id, title, and descrition columns from the film table for films where the length of the description is between 100 and 120.
 LIKE operator
